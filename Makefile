@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -std=gnu11 `pkg-config --cflags clutter-1.0`
+CFLAGS = -Wall -g -std=gnu11 `pkg-config --cflags clutter-1.0`
 LDLIBS = `pkg-config --libs clutter-1.0`
 TARGET = main
 DEPS = life

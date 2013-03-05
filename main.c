@@ -129,5 +129,8 @@ int main(int argc, char *argv[]) {
     // Main event loop
     clutter_main();
 
+    // Free memory
+    free(game);
+
     return EXIT_SUCCESS;
 }

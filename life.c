@@ -17,11 +17,30 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "life.h"
+
+int get_neighbor_count(game_of_life *game, int x, int y) {
+    int count = 0;
+    int max = FIELDS_PER_SIDE - 1;
+    if (x > 0) {
+        count += game->fields[x-1][y]; // west
+        if (y > 0) count += game->fields[x-1][y-1]; // northwest
+        if (y < max) count += game->fields[x-1][y+1]; // southwest
+    }
+    if (x < max) {
+        count += game->fields[x+1][y]; // east
+        if (y > 0) count += game->fields[x+1][y-1]; // northeast
+        if (y < max) count += game->fields[x+1][y+1]; // southeast
+    }
+    if (y > 0) count += game->fields[x][y-1]; // north
+    if (y < max) count += game->fields[x][y+1]; // south
+    return count;
+}
 
 game_of_life* game_of_life_new() {
     // Create playing field with 2 dimensional array
-    game_of_life *game = malloc(sizeof(game_of_life));;
+    game_of_life *game = malloc(sizeof(game_of_life));
     // Initialize arrays with 0
     for (int i = 0; i < FIELDS_PER_SIDE; i++) {
         for (int j = 0; j < FIELDS_PER_SIDE; j++) {
@@ -32,11 +51,27 @@ game_of_life* game_of_life_new() {
 }
 
 void next_generation(game_of_life *game) {
-    int field;
+    char *field;
+    int neighbor_count;
+    // Create snapshot of current game state
+    game_of_life *snapshot = malloc(sizeof(*game));
+    memcpy(snapshot, game, sizeof(*game));
+    // Calculate life/death of fields
     for (int i = 0; i < FIELDS_PER_SIDE; i++) {
         for (int j = 0; j < FIELDS_PER_SIDE; j++) {
-            field = game->fields[i][j];
-            game->fields[i][j] = field == 1 ? 0 : 1;
+            field = &(game->fields[i][j]);
+            neighbor_count = get_neighbor_count(snapshot, i, j);
+            if (*field == 1) {
+                if (neighbor_count < 2 || neighbor_count > 3) {
+                    *field = 0;
+                }
+            } else {
+                if (neighbor_count == 3) {
+                    *field = 1;
+                }
+            }
         }
     }
+    // Free memory
+    free(snapshot);
 }
