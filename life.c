@@ -11,28 +11,15 @@ ClutterColor stage_color = { 0, 64, 0, 255 };
 ClutterColor lgreen = { 0, 255, 0, 192 };
 ClutterColor dgreen = { 0, 223, 0, 160 };
 
-void on_stage_button_press(ClutterStage *stage, ClutterEvent *event, gpointer data) {
-    // Find out which part of the screen was clicked
-    gfloat x = 0;
-    gfloat y = 0;
-    clutter_event_get_coords(event, &x, &y);
-
-    // Find which actor was clicked
-    ClutterActor* clicked = clutter_stage_get_actor_at_pos(CLUTTER_STAGE(stage), CLUTTER_PICK_ALL, x, y);
-
-    // Ignore clicks on the stage
-    if (clicked == CLUTTER_ACTOR(stage)) return;
-
-    // Toggle the field that was clicked
-    ClutterColor oldcolor;
-    ClutterColor newcolor;
-    clutter_rectangle_get_color(CLUTTER_RECTANGLE(clicked), &oldcolor);
+void on_rect_button_press(ClutterActor *actor, ClutterEvent *event, gpointer data) {
+    ClutterColor oldcolor, newcolor;
+    clutter_rectangle_get_color(CLUTTER_RECTANGLE(actor), &oldcolor);
     if (clutter_color_equal(&oldcolor, &stage_color)) {
         newcolor = lgreen;
     } else {
         newcolor = stage_color;
     }
-    clutter_rectangle_set_color(CLUTTER_RECTANGLE(clicked), &newcolor);
+    clutter_rectangle_set_color(CLUTTER_RECTANGLE(actor), &newcolor);
 }
 
 int main(int argc, char *argv[]) {
@@ -51,17 +38,18 @@ int main(int argc, char *argv[]) {
             ClutterActor *rect = clutter_rectangle_new();
             clutter_actor_set_size(rect, FIELD_WIDTH, FIELD_WIDTH);
             clutter_actor_set_position(rect, i * FIELD_WIDTH, j * FIELD_WIDTH);
+            clutter_actor_set_reactive(rect, TRUE);
             clutter_rectangle_set_color(CLUTTER_RECTANGLE(rect), &stage_color);
             clutter_rectangle_set_border_width(CLUTTER_RECTANGLE(rect), 1);
             clutter_rectangle_set_border_color(CLUTTER_RECTANGLE(rect), &dgreen);
             clutter_container_add_actor(CLUTTER_CONTAINER(stage), rect);
             clutter_actor_show(rect);
             fields[i][j] = rect;
+
+            // Attach click handlers
+            g_signal_connect(rect, "button-press-event", G_CALLBACK(on_rect_button_press), NULL);
         }
     }
-
-    // Add event handlers
-    g_signal_connect(stage, "button-press-event", G_CALLBACK(on_stage_button_press), NULL);
 
     // Show stage
     clutter_actor_show(stage);
