@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CFLAGS = `pkg-config --cflags clutter-1.0` -g -Wall -std=gnu11
 LDLIBS = `pkg-config --libs clutter-1.0`
 TARGET = life
