@@ -10,4 +10,4 @@ License
 GPLv3, see `LICENSE` file.
 
 
-.. clutter:: http://clutter-project.org/
+.. _clutter-gtk: http://clutter-project.org/
