@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <clutter/clutter.h>
 #include "life.h"
 
@@ -30,6 +31,8 @@ ClutterColor lgreen = { 0, 255, 0, 192 };
 ClutterColor dgreen = { 0, 223, 0, 160 };
 ClutterColor white = { 255, 255, 255, 192 };
 ClutterColor black = { 0, 0, 0, 192 };
+
+gint fullscreen_mode = 0;
 
 game_of_life *game;
 gint generation = 0;
@@ -72,11 +75,17 @@ void on_step_button_press(ClutterActor *actor, ClutterEvent *event, gpointer dat
 int main(int argc, char *argv[]) {
     clutter_init(&argc, &argv);
 
+    // Enable fullscreen mode on demand
+    if (argc > 1 && strncmp(argv[1], "-f", 2) == 0) {
+        fullscreen_mode = 1;
+    }
+
     // Set up stage
     ClutterActor *stage = clutter_stage_new();
     clutter_actor_set_size(stage, FIELD_WIDTH * FIELDS_PER_SIDE, FIELD_WIDTH * FIELDS_PER_SIDE + BOTTOM_HEIGHT);
     clutter_actor_set_background_color(stage, &stage_color);
     clutter_stage_set_title(CLUTTER_STAGE(stage), "Game Of Life");
+    clutter_stage_set_fullscreen(stage, fullscreen_mode);
 
     // Create rectangles
     for (int i = 0; i < FIELDS_PER_SIDE; i++) {

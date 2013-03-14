@@ -41,21 +41,25 @@ int get_neighbor_count(game_of_life *game, int x, int y) {
 game_of_life* game_of_life_new() {
     // Create playing field with 2 dimensional array
     game_of_life *game = malloc(sizeof(game_of_life));
+
     // Initialize arrays with 0
     for (int i = 0; i < FIELDS_PER_SIDE; i++) {
         for (int j = 0; j < FIELDS_PER_SIDE; j++) {
             game->fields[i][j] = 0;
         }
     }
+
     return game;
 }
 
 void next_generation(game_of_life *game) {
     char *field;
     int neighbor_count;
+
     // Create snapshot of current game state
     game_of_life *snapshot = malloc(sizeof(*game));
     memcpy(snapshot, game, sizeof(*game));
+
     // Calculate life/death of fields
     for (int i = 0; i < FIELDS_PER_SIDE; i++) {
         for (int j = 0; j < FIELDS_PER_SIDE; j++) {
@@ -72,6 +76,7 @@ void next_generation(game_of_life *game) {
             }
         }
     }
+
     // Free memory
     free(snapshot);
 }
